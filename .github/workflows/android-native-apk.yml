@@ -1,0 +1,82 @@
+name: Chicken Taxi Android APK - No Unity
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "Android/**"
+      - ".github/workflows/android-native-apk.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chicken-taxi-native-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    name: Build playable Android debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configure Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Validate app source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s Android/app/src/main/assets/index.html
+          test -s Android/app/src/main/assets/style.css
+          test -s Android/app/src/main/assets/game.js
+          test -s Android/app/src/main/java/com/chickentaxi/game/MainActivity.java
+          node --check Android/app/src/main/assets/game.js
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('Android/app/src/main/AndroidManifest.xml')"
+          echo "HTML/JavaScript/Android manifest checks passed."
+
+      - name: Install Android 35 SDK platform and tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build debug APK (no Unity or license required)
+        shell: bash
+        working-directory: Android
+        run: |
+          set -euo pipefail
+          gradle :app:assembleDebug --no-daemon --stacktrace --console=plain
+
+      - name: Confirm Android APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="Android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK" || { echo "::error::The Android build did not produce an APK"; exit 1; }
+          unzip -t "$APK" >/dev/null
+          ls -lh "$APK"
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChickenTaxi-Android-Playable-APK
+          path: Android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
