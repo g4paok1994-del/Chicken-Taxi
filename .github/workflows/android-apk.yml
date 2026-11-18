@@ -1,0 +1,85 @@
+name: Build Chicken Taxi Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/android-apk.yml'
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chicken-taxi-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    name: Unity Android development APK
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Verify Unity project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s ProjectSettings/ProjectVersion.txt
+          test -s Packages/manifest.json
+          test -s Assets/Scripts/ChickenTaxiGame.cs
+          test -s Assets/Editor/ChickenTaxiEditorSetup.cs
+          python3 -m json.tool Packages/manifest.json >/dev/null
+          echo "Unity project structure verified."
+
+      - name: Check Unity activation
+        shell: bash
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$UNITY_LICENSE" && ( -z "$UNITY_EMAIL" || -z "$UNITY_PASSWORD" ) ]]; then
+            echo "::error::Unity activation missing. Configure UNITY_LICENSE or a supported UNITY_EMAIL/UNITY_PASSWORD activation in Settings > Secrets and variables > Actions. See Docs/GITHUB_ACTIONS_APK.md"
+            exit 1
+          fi
+          echo "Unity activation inputs are present."
+
+      - name: Build Android APK (GameCI)
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          projectPath: .
+          targetPlatform: Android
+          androidExportType: androidPackage
+          buildMethod: ChickenTaxiEditorSetup.BuildAndroidApk
+          buildName: ChickenTaxi-Development
+          buildsPath: Builds
+          allowDirtyBuild: true
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="Builds/ChickenTaxi-Development.apk"
+          test -s "$APK" || { echo "::error::No APK found at $APK"; exit 1; }
+          unzip -t "$APK" >/dev/null
+          ls -lh "$APK"
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChickenTaxi-Android-Development-APK
+          path: Builds/ChickenTaxi-Development.apk
+          if-no-files-found: error
+          retention-days: 14
