@@ -22,6 +22,12 @@ The repository now contains **two different implementations**:
 
 Detailed instructions: **[Android/README.md](Android/README.md)**.
 
+## Play online (GitHub Pages)
+
+**The online URL is not live until GitHub Pages is enabled.** To publish the playable HTML5 version, open [Settings → Pages](https://github.com/g4paok1994-del/Chicken-Taxi/settings/pages). Set **Source → Deploy from a branch**, **Branch → main**, **Folder → /docs**, and click **Save**. GitHub then publishes the site at [https://g4paok1994-del.github.io/Chicken-Taxi/](https://g4paok1994-del.github.io/Chicken-Taxi/). The three required web files are already committed in the lowercase `docs/` folder; no Unity, APK or secret is needed.
+
+The earlier GitHub Actions Pages deployment failed because Pages was not enabled. Do not treat the site URL as verified live until GitHub displays a publication status or the browser loads the game. See [Docs/PLAY_ONLINE.md](Docs/PLAY_ONLINE.md).
+
 ## Play in a browser
 
 The same HTML5 game can run in a modern desktop/mobile browser using `Android/app/src/main/assets/index.html`. It needs no internet connection, no API keys, and no Unity license.

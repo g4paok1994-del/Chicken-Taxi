@@ -2,11 +2,6 @@ name: Play Chicken Taxi Online - GitHub Pages
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'Android/app/src/main/assets/**'
-      - '.github/workflows/deploy-web.yml'
 
 permissions:
   contents: read
