@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#102338">
+  <title>Chicken Taxi</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Chicken Taxi game area"></canvas>
+  <div id="hud" class="hidden">
+    <div id="stats" class="glass">
+      <div><span class="metric-label">COINS</span><strong id="coins">0</strong></div>
+      <div><span class="metric-label">SCORE</span><strong id="score">0</strong></div>
+      <button type="button" id="pause" aria-label="Pause game">Ⅱ</button>
+    </div>
+    <div id="mission" class="glass">
+      <span id="missionTitle">PICK UP THE CHICKEN</span>
+      <span id="missionSubtitle">Follow the yellow marker</span>
+      <div id="missionTimer"></div>
+    </div>
+    <div id="navigation"><div id="direction">▲</div><span id="distance">0m</span></div>
+    <div id="toast" role="status"></div>
+    <div id="upgradePanel" class="glass">
+      <span id="speedLabel">TAXI LVL 1</span>
+      <button type="button" id="upgrade">UPGRADE · 30 🪙</button>
+    </div>
+    <div id="controls">
+      <button type="button" class="drive" id="left" aria-label="Steer left">◀</button>
+      <button type="button" class="drive brake" id="brake" aria-label="Brake">BRAKE</button>
+      <button type="button" class="drive" id="right" aria-label="Steer right">▶</button>
+    </div>
+  </div>
+  <div id="overlay">
+    <div id="menuScreen" class="menu-card">
+      <div class="chicken-logo">🐔</div>
+      <div class="eyebrow">THE ENDLESS CHICKEN CAB ADVENTURE</div>
+      <h1>CHICKEN<br><span>TAXI</span></h1>
+      <p>Pick up chickens. Beat the clock.<br>Earn coins and upgrade your ride.</p>
+      <button type="button" id="play" class="primary">▶ &nbsp; START DRIVING</button>
+      <div class="instructions">◀ ▶ to steer · BRAKE to turn tighter<br>Follow the arrow to your next passenger</div>
+      <small>OFFLINE GAME · NO ADS IN THIS PROTOTYPE</small>
+    </div>
+    <div id="pauseScreen" class="menu-card hidden">
+      <div class="chicken-logo">🚕</div>
+      <h2>PAUSED</h2>
+      <p>Your chickens are waiting.</p>
+      <button type="button" id="resume" class="primary">▶ &nbsp; RESUME</button>
+      <button type="button" id="restart" class="secondary">RESTART RUN</button>
+      <button type="button" id="home" class="secondary">MAIN MENU</button>
+    </div>
+  </div>
+  <script src="./game.js"></script>
+</body>
+</html>
