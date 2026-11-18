@@ -1,23 +1,28 @@
-# Chicken Taxi — current build status
+# Chicken Taxi — verified Android build status
 
-The project has **two distinct build paths**.
+**Updated November 18, 2026**
 
-## Preferred path — Android without Unity
+## Android APK: GitHub Actions build SUCCEEDED
 
-- Source: `Android/`, standalone WebView game and Gradle build.
-- Workflow: `.github/workflows/android-native-apk.yml`.
-- No Unity activation or `UNITY_LICENSE` is needed.
-- Successful workflow runs upload an installable debug APK artifact named `ChickenTaxi-Android-Playable-APK`.
-- Verify the actual run status in [GitHub Actions](https://github.com/g4paok1994-del/Chicken-Taxi/actions); do not treat source commits as evidence of a successful APK build.
-- See `Android/README.md` for installation and QA instructions.
+The standalone Android implementation in `Android/` has a verified successful GitHub Actions run:
 
-## Optional Unity path
+- **Workflow:** `Chicken Taxi Android APK - No Unity` at `.github/workflows/android-native-apk.yml`
+- **Successful run:** https://github.com/g4paok1994-del/Chicken-Taxi/actions/runs/44311531853
+- **Artifact:** `ChickenTaxi-Android-Playable-APK` (artifact ID `14429789886`)
+- **Inside artifact ZIP:** `app-debug.apk`
+- **Validation:** JavaScript syntax, Android SDK setup, Gradle `assembleDebug`, APK ZIP-format integrity and artifact upload all passed.
+- **Activation/secrets:** No Unity license, Unity account, keystore or GitHub Secrets required for this signed debug APK.
 
-- Source: `Assets/`, `Packages/`, `ProjectSettings/`.
-- Workflow: `.github/workflows/android-apk.yml`.
-- Run #44309939927 failed at **Check Unity activation** on November 18, 2026 because the required Unity activation secrets were absent. The structure check passed, but Unity did not run.
-- Unity route remains available for later improvements, provided a compatible license is configured.
+**Important:** This is an Android *debug build*. The GitHub CI success proves that the APK can be built and packaged, not that it has been play-tested on real phones. The app is an HTML5 game running inside a native Android WebView and is distinct from the Unity prototype.
 
-## Remaining before production
+## Installation
 
-On-device testing, polished assets, final branding, production signing and AAB, privacy/data safety review, optional AdMob integration and an appropriate user consent flow. The Android build is a **prototype**, not a certified Google Play release.
+Visit the successful Actions run, download the artifact named `ChickenTaxi-Android-Playable-APK`, extract its ZIP, and install `app-debug.apk` on your Android device. The artifact may expire after 30 days; rerun the workflow to generate a new download.
+
+## Other build path: original Unity prototype
+
+The Unity implementation remains under `Assets/`, `Packages/`, and `ProjectSettings/`. Its separate workflow `android-apk.yml` needs compatible Unity activation credentials. The Unity job has **not** succeeded because activation secrets are missing. For playing the standalone Android game, **ignore the Unity workflow**.
+
+## Before production release
+
+Test the installed APK on one or more actual Android devices; confirm the touch controls, chicken pickups, missions, sound, progress persistence, pause/resume and app launch. Google Play distribution requires production app signing, AAB, Play Console review, and truthful privacy/data safety information. **AdMob is not integrated** in the present standalone app.
