@@ -1,0 +1,53 @@
+name: Play Chicken Taxi Online - GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Android/app/src/main/assets/**'
+      - '.github/workflows/deploy-web.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: chicken-taxi-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy-web:
+    name: Publish Chicken Taxi web game
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout game
+        uses: actions/checkout@v4
+
+      - name: Build static site from Android game assets
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp Android/app/src/main/assets/index.html _site/index.html
+          cp Android/app/src/main/assets/style.css _site/style.css
+          cp Android/app/src/main/assets/game.js _site/game.js
+          touch _site/.nojekyll
+          node --check _site/game.js
+          test -s _site/index.html
+          echo "Offline HTML5 game ready to deploy."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
